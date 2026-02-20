@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF FLOW — PDF差し込み一括生成 | テンプレートからPDFを大量作成</title>
+<meta name="description" content="PDFテンプレートにCSV/Excelデータを差し込み、一括でPDFを生成。請求書・見積書・領収書・納品書に対応。すべてブラウザ内処理でデータ漏洩ゼロ。">
+<meta name="keywords" content="PDF差し込み印刷,PDF一括生成,請求書一括作成,見積書作成,PDF CSV,PDFテンプレート,mail merge PDF">
+<link rel="canonical" href="https://pdfflow.mamonis.studio/">
+<meta property="og:title" content="PDF FLOW — PDFテンプレートから一括生成">
+<meta property="og:description" content="CSV/Excelデータを差し込んでPDFを一括生成。ブラウザ完結でプライバシー安心。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pdfflow.mamonis.studio/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"PDF FLOW",
+  "applicationCategory":"BusinessApplication",
+  "operatingSystem":"Web Browser",
+  "offers":[
+    {"@type":"Offer","price":"0","priceCurrency":"JPY","description":"Free: 5 PDFs/month"},
+    {"@type":"Offer","price":"2980","priceCurrency":"JPY","description":"Standard: 100 PDFs/month"},
+    {"@type":"Offer","price":"5980","priceCurrency":"JPY","description":"Pro: 500 PDFs/month"},
+    {"@type":"Offer","price":"9800","priceCurrency":"JPY","description":"Business: Unlimited"}
+  ]
+}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf9;--fg:#1c1917;--muted:#78716c;--border:#e7e5e4;
+  --accent:#1e3a5f;--accent-l:#2d5a8e;--accent-bg:rgba(30,58,95,.04);
+  --card:#fff;--card-hover:#f5f5f4;
+  --green:#059669;--green-bg:#ecfdf5;
+  --amber:#d97706;--amber-bg:#fffbeb;
+  --radius:12px;--radius-lg:20px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans','Noto Sans JP',sans-serif;color:var(--fg);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+
+.container{max-width:1080px;margin:0 auto;padding:0 24px}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(250,250,249,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+nav .inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px}
+.logo-text{font-weight:700;font-size:15px;letter-spacing:-.02em}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:-2px}
+nav .links{display:flex;align-items:center;gap:20px;font-size:14px}
+nav .links a.nav-link{color:var(--muted);transition:color .2s}
+nav .links a.nav-link:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-l);transform:translateY(-1px);box-shadow:0 4px 12px rgba(30,58,95,.25)}
+.btn-outline{background:transparent;color:var(--fg);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:8px 16px;font-size:13px}
+.btn-white{background:#fff;color:var(--accent);font-weight:700;border:none}
+.btn-white:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+/* High contrast nav CTA */
+.btn-nav{background:var(--accent);color:#fff;padding:8px 18px;font-size:13px;border-radius:8px;font-weight:700;letter-spacing:-.01em}
+.btn-nav:hover{background:var(--accent-l);box-shadow:0 2px 8px rgba(30,58,95,.3)}
+
+/* Hero */
+.hero{padding:100px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(30,58,95,.06) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;max-width:700px;margin:0 auto}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .sub{font-size:clamp(1rem,2vw,1.15rem);color:var(--muted);max-width:540px;margin:20px auto 0;line-height:1.7}
+.hero-actions{display:flex;gap:12px;justify-content:center;margin-top:36px;flex-wrap:wrap}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green);padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;margin-top:24px}
+.hero-badge svg{width:14px;height:14px}
+
+/* Demo visual */
+.demo-wrap{margin-top:60px;position:relative}
+.demo-visual{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px;box-shadow:0 20px 60px rgba(0,0,0,.06);max-width:800px;margin:0 auto}
+.demo-flow{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+.demo-step{text-align:center;flex:1;min-width:120px}
+.demo-step .icon-wrap{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:1.5px solid var(--border)}
+.demo-step .icon-wrap svg{width:24px;height:24px;stroke:var(--accent)}
+.demo-step p{font-size:13px;font-weight:600;color:var(--fg)}
+.demo-step span{font-size:11px;color:var(--muted)}
+.demo-arrow{color:var(--border);font-size:20px;font-weight:300}
+
+/* Section shared */
+.section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:8px}
+.section-title{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin-bottom:12px}
+.section-sub{color:var(--muted);max-width:500px;font-size:15px}
+
+/* Features */
+.features{padding:100px 0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;transition:all .25s}
+.feature-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.05)}
+.feature-card .fc-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.feature-card .fc-icon svg{width:20px;height:20px;stroke:var(--accent)}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.feature-card p{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* How it works */
+.how{padding:80px 0;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px}
+.how-step{text-align:center}
+.how-step .num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.how-step h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.how-step p{font-size:13px;color:var(--muted)}
+
+/* Comparison */
+.compare{padding:60px 0;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.compare table{width:100%;border-collapse:collapse;margin-top:36px;font-size:14px}
+.compare th,.compare td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.compare th{font-weight:600;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.compare td:first-child{font-weight:600}
+.compare .yes{color:var(--green);font-weight:700}
+.compare .no{color:#d4d4d4}
+.compare .hl{background:var(--accent-bg)}
+
+/* Pricing */
+.pricing{padding:100px 0}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
+.price-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius-lg);padding:28px;position:relative;transition:all .25s}
+.price-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.price-card.featured{border-color:var(--accent);box-shadow:0 8px 30px rgba(30,58,95,.1)}
+.price-card .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:4px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.price-card .plan-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+.price-card .plan-price{font-size:32px;font-weight:700;letter-spacing:-.03em}
+.price-card .plan-price span{font-size:14px;font-weight:400;color:var(--muted)}
+.price-card .plan-desc{font-size:13px;color:var(--muted);margin:10px 0 18px;min-height:36px}
+.price-card ul{list-style:none;margin-bottom:20px}
+.price-card li{font-size:13px;padding:5px 0;display:flex;align-items:center;gap:8px;color:var(--fg)}
+.price-card li svg{width:16px;height:16px;stroke:var(--green);flex-shrink:0}
+.price-card .plan-btn{display:block;text-align:center;width:100%}
+
+/* FAQ */
+.faq{padding:80px 0}
+.faq-list{max-width:680px;margin:48px auto 0}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
+.faq-q{font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.faq-q::after{content:'+';font-size:20px;font-weight:300;color:var(--muted);transition:transform .2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-item.open .faq-a{max-height:300px;padding-top:12px}
+
+/* CTA */
+.cta{padding:80px 0;text-align:center}
+.cta-box{background:var(--accent);color:#fff;border-radius:var(--radius-lg);padding:60px 40px;max-width:700px;margin:0 auto;position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;top:-100px;right:-100px;width:300px;height:300px;background:rgba(255,255,255,.05);border-radius:50%}
+.cta-box h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;letter-spacing:-.02em;margin-bottom:12px}
+.cta-box p{font-size:15px;opacity:.8;margin-bottom:28px}
+
+/* Footer */
+footer{padding:40px 0;border-top:1px solid var(--border);text-align:center}
+footer p{font-size:13px;color:var(--muted)}
+footer a{color:var(--accent);font-weight:500}
+
+/* Lang toggle */
+[data-lang="en"] .ja,[data-lang="ja"] .en{display:none}
+.lang-toggle{display:flex;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:2px;font-size:12px}
+.lang-toggle button{padding:4px 10px;border:none;background:none;cursor:pointer;border-radius:4px;font-weight:500;color:var(--muted);transition:all .2s}
+.lang-toggle button.active{background:var(--accent);color:#fff}
+
+/* Check icon in pricing */
+.ck{width:16px;height:16px;flex-shrink:0}
+
+@media(max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .hero{padding:60px 0 40px}
+  .demo-flow{gap:12px}
+  .demo-arrow{display:none}
+  .features,.pricing{padding:60px 0}
+  nav .links .nav-link{display:none}
+}
+@media(max-width:640px){
+  .how-steps{grid-template-columns:1fr 1fr;gap:28px}
+  .pricing-grid{grid-template-columns:1fr}
+  .compare{overflow-x:auto}
+  .compare table{min-width:600px}
+}
+</style>
+</head>
+<body data-lang="ja">
+
+<nav>
+<div class="container inner">
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div>
+      <div class="logo-text">PDF FLOW</div>
+      <div class="logo-sub ja">テンプレートからPDF一括生成</div>
+      <div class="logo-sub en">Batch PDF Generation</div>
+    </div>
+  </div>
+  <div class="links">
+    <a href="#features" class="nav-link ja">機能</a><a href="#features" class="nav-link en">Features</a>
+    <a href="#pricing" class="nav-link ja">料金</a><a href="#pricing" class="nav-link en">Pricing</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+    <div class="lang-toggle">
+      <button onclick="setLang('ja')" id="btn-ja" class="active">JP</button>
+      <button onclick="setLang('en')" id="btn-en">EN</button>
+    </div>
+    <a href="/pdfflow/app/" class="btn btn-nav ja">無料で始める</a>
+    <a href="/pdfflow/app/" class="btn btn-nav en">Get Started Free</a>
+  </div>
+</div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+<div class="container">
+  <h1 class="ja">PDFテンプレートに<br><span>データを差し込み</span><br>一括生成</h1>
+  <h1 class="en">Batch Generate PDFs<br>from <span>Templates + Data</span></h1>
+  <p class="sub ja">CSV / Excelのデータをテンプレートに差し込み、請求書・見積書・領収書をまとめて生成。<br>すべてブラウザ内で処理。データがサーバーに送信されることは一切ありません。</p>
+  <p class="sub en">Merge CSV or Excel data into PDF templates to batch-generate invoices, quotes, receipts and more.<br>100% browser-side processing. Your data never leaves your device.</p>
+  <div class="hero-actions">
+    <a href="/pdfflow/app/" class="btn btn-primary ja">無料で試す →</a>
+    <a href="/pdfflow/app/" class="btn btn-primary en">Try Free →</a>
+    <a href="#how" class="btn btn-outline ja">使い方を見る</a>
+    <a href="#how" class="btn btn-outline en">See How It Works</a>
+  </div>
+  <div class="hero-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span class="ja">完全ブラウザ処理 — データ送信ゼロ</span>
+    <span class="en">100% Client-Side — Zero Data Upload</span>
+  </div>
+
+  <div class="demo-wrap">
+    <div class="demo-visual">
+      <div class="demo-flow">
+        <div class="demo-step">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <p class="ja">テンプレ選択</p><p class="en">Pick Template</p>
+          <span class="ja">請求書・見積書など</span><span class="en">Invoice, Quote, etc.</span>
+        </div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+          <p class="ja">データ取込</p><p class="en">Import Data</p>
+          <span>CSV / Excel / JSON</span>
+        </div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <p class="ja">プレビュー</p><p class="en">Preview</p>
+          <span class="ja">1件ずつ確認</span><span class="en">Check Each</span>
+        </div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-step">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <p class="ja">一括ダウンロード</p><p class="en">Batch Download</p>
+          <span class="ja">ZIP or 結合PDF</span><span class="en">ZIP or Merged</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+<div class="container">
+  <div class="section-label">Features</div>
+  <h2 class="section-title ja">シンプルなのに、十分すぎる</h2>
+  <h2 class="section-title en">Simple, Yet More Than Enough</h2>
+  <p class="section-sub ja">面倒なインストールもサーバーアップロードも不要。ブラウザだけで完結します。</p>
+  <p class="section-sub en">No installs, no server uploads. Everything happens right in your browser.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h3 class="ja">完全クライアント処理</h3><h3 class="en">100% Client-Side</h3>
+      <p class="ja">データは一切サーバーに送信されません。機密性の高い請求書や個人情報も安心して処理できます。</p>
+      <p class="en">Your data never touches any server. Confidential invoices and personal data stay on your device.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+      <h3 class="ja">CSV / Excel / JSON対応</h3><h3 class="en">CSV / Excel / JSON</h3>
+      <p class="ja">使い慣れたスプレッドシートからそのままデータを取り込み。カラム名を自動マッピングします。</p>
+      <p class="en">Import from your existing spreadsheets. Column names are auto-mapped to template fields.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+      <h3 class="ja">グローバル対応</h3><h3 class="en">Global Ready</h3>
+      <p class="ja">税率・税名・通貨記号・日付形式をカスタマイズ可能。日本の消費税もUS Sales TaxもEU VATも対応。</p>
+      <p class="en">Customize tax rate, currency, date format. Works with Japanese tax, US sales tax, EU VAT and more.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <h3 class="ja">4種のテンプレート</h3><h3 class="en">4 Built-in Templates</h3>
+      <p class="ja">請求書・見積書・領収書・納品書。品目数は1〜10行まで自由に設定可能。</p>
+      <p class="en">Invoice, Quotation, Receipt, Delivery Slip. Configurable 1-10 line items per document.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+      <h3 class="ja">ZIP or 結合PDF</h3><h3 class="en">ZIP or Merged PDF</h3>
+      <p class="ja">個別ファイルのZIPか、全件を1つにまとめた結合PDFか。用途に合わせて出力形式を選択。</p>
+      <p class="en">Download as individual files in a ZIP, or merge all into a single PDF.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
+      <h3 class="ja">自社情報プリセット</h3><h3 class="en">Company Info Preset</h3>
+      <p class="ja">会社名・住所・電話番号・振込先を一度設定すれば全テンプレートに自動反映。</p>
+      <p class="en">Set your company details once, auto-fill across all templates.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- How It Works -->
+<section class="how" id="how">
+<div class="container">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title ja">4ステップで完了</h2>
+  <h2 class="section-title en">Done in 4 Steps</h2>
+  <div class="how-steps">
+    <div class="how-step"><div class="num">1</div><h4 class="ja">テンプレート選択</h4><h4 class="en">Choose Template</h4><p class="ja">請求書・見積書・領収書・納品書から選択</p><p class="en">Invoice, Quote, Receipt, or Delivery Slip</p></div>
+    <div class="how-step"><div class="num">2</div><h4 class="ja">データ取込</h4><h4 class="en">Import Data</h4><p class="ja">CSV / Excel / JSON をアップロード、または手入力</p><p class="en">Upload CSV / Excel / JSON, or type manually</p></div>
+    <div class="how-step"><div class="num">3</div><h4 class="ja">プレビュー確認</h4><h4 class="en">Preview</h4><p class="ja">1件ずつPDFをプレビューで確認</p><p class="en">Check each PDF before generating</p></div>
+    <div class="how-step"><div class="num">4</div><h4 class="ja">一括ダウンロード</h4><h4 class="en">Download</h4><p class="ja">ZIP or 結合PDFでまとめてダウンロード</p><p class="en">Download as ZIP or merged PDF</p></div>
+  </div>
+</div>
+</section>
+
+<!-- Comparison -->
+<section class="compare" id="compare">
+<div class="container">
+  <div class="section-label">Comparison</div>
+  <h2 class="section-title ja">他サービスとの比較</h2>
+  <h2 class="section-title en">How We Compare</h2>
+  <table>
+    <thead>
+      <tr><th></th><th class="hl">PDF FLOW</th><th>MailMergic</th><th>AutoMailMerge</th><th>Autocrat</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="ja">ブラウザ完結</td><td class="en">Browser Only</td><td class="hl yes">&#10003;</td><td class="no">&#10005;</td><td class="no">&#10005;</td><td class="yes">&#10003;</td></tr>
+      <tr><td class="ja">サーバー送信なし</td><td class="en">No Server Upload</td><td class="hl yes">&#10003;</td><td class="no">&#10005;</td><td class="yes">&#10003;</td><td class="no">&#10005;</td></tr>
+      <tr><td class="ja">既存PDF利用</td><td class="en">Use Existing PDFs</td><td class="hl yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&#10005;</td></tr>
+      <tr><td class="ja">日本語完全対応</td><td class="en">Full Japanese</td><td class="hl yes">&#10003;</td><td class="no">&#10005;</td><td class="no">&#10005;</td><td class="no">&#10005;</td></tr>
+      <tr><td class="ja">インストール不要</td><td class="en">No Install</td><td class="hl yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&#10005;</td><td class="yes">&#10003;</td></tr>
+      <tr><td class="ja">無料プランあり</td><td class="en">Free Plan</td><td class="hl yes">&#10003;</td><td class="no">&#10005;</td><td class="no">&#10005;</td><td class="yes">&#10003;</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+<div class="container">
+  <div class="section-label">Pricing</div>
+  <h2 class="section-title ja">シンプルな料金体系</h2>
+  <h2 class="section-title en">Simple Pricing</h2>
+  <p class="section-sub ja">まずは無料で試して、必要に応じてアップグレード。</p>
+  <p class="section-sub en">Start free, upgrade when you need more.</p>
+  <div class="pricing-grid">
+    <!-- Free -->
+    <div class="price-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">¥0</div>
+      <div class="plan-desc ja">個人利用やお試しに</div>
+      <div class="plan-desc en">For personal use</div>
+      <ul>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">月5件まで</span><span class="en">5 PDFs / month</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">全テンプレート</span><span class="en">All templates</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">ウォーターマーク付き</span><span class="en">With watermark</span></li>
+      </ul>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn ja">無料で始める</a>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn en">Get Started</a>
+    </div>
+    <!-- Standard -->
+    <div class="price-card featured">
+      <div class="badge ja">おすすめ</div><div class="badge en">Popular</div>
+      <div class="plan-name">Standard</div>
+      <div class="plan-price">¥2,980<span class="ja">/月</span><span class="en">/mo</span></div>
+      <div class="plan-desc ja">定期的に書類を発行する方に</div>
+      <div class="plan-desc en">For regular document generation</div>
+      <ul>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">月100件まで</span><span class="en">100 PDFs / month</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">ウォーターマークなし</span><span class="en">No watermark</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">テンプレート保存 5件</span><span class="en">5 saved templates</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">自社情報プリセット</span><span class="en">Company presets</span></li>
+      </ul>
+      <a href="/pdfflow/app/" class="btn btn-primary plan-btn ja">申し込む →</a>
+      <a href="/pdfflow/app/" class="btn btn-primary plan-btn en">Subscribe →</a>
+    </div>
+    <!-- Pro -->
+    <div class="price-card">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">¥5,980<span class="ja">/月</span><span class="en">/mo</span></div>
+      <div class="plan-desc ja">大量の書類を扱うプロに</div>
+      <div class="plan-desc en">For high-volume professionals</div>
+      <ul>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">月500件まで</span><span class="en">500 PDFs / month</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">ウォーターマークなし</span><span class="en">No watermark</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">テンプレート無制限</span><span class="en">Unlimited templates</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">API アクセス</span><span class="en">API access</span></li>
+      </ul>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn ja">申し込む →</a>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn en">Subscribe →</a>
+    </div>
+    <!-- Business -->
+    <div class="price-card">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">¥9,800<span class="ja">/月</span><span class="en">/mo</span></div>
+      <div class="plan-desc ja">チームでの大規模運用に</div>
+      <div class="plan-desc en">For teams and enterprise</div>
+      <ul>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">生成数 無制限</span><span class="en">Unlimited PDFs</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">ウォーターマークなし</span><span class="en">No watermark</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">チーム共有</span><span class="en">Team sharing</span></li>
+        <li><svg class="ck" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><span class="ja">優先サポート</span><span class="en">Priority support</span></li>
+      </ul>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn ja">申し込む →</a>
+      <a href="/pdfflow/app/" class="btn btn-outline plan-btn en">Subscribe →</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+<div class="container">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title ja">よくある質問</h2>
+  <h2 class="section-title en">Frequently Asked Questions</h2>
+  <div class="faq-list">
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q"><span class="ja">データはサーバーに送信されますか？</span><span class="en">Is my data uploaded to any server?</span></div>
+      <div class="faq-a"><span class="ja">いいえ。PDF FLOW はすべての処理をお使いのブラウザ内で実行します。PDFの生成もデータの処理も、一切サーバーに送信されることはありません。認証やプラン管理のみ、暗号化された最小限の通信を行います。</span><span class="en">No. PDF FLOW processes everything in your browser. PDF generation and data processing never leave your device. Only authentication and plan management use minimal encrypted communication.</span></div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q"><span class="ja">無料プランの制限は？</span><span class="en">What are the free plan limits?</span></div>
+      <div class="faq-a"><span class="ja">月5件までPDFを生成できます。すべてのテンプレートと機能が利用可能ですが、生成されたPDFにはウォーターマークが入ります。Standard以上のプランでウォーターマークが解除されます。</span><span class="en">You can generate up to 5 PDFs per month with all templates and features. Generated PDFs include a watermark. Upgrade to Standard or above to remove it.</span></div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q"><span class="ja">対応しているファイル形式は？</span><span class="en">What file formats are supported?</span></div>
+      <div class="faq-a"><span class="ja">CSV、TSV、Excel (.xlsx / .xls)、JSON に対応しています。カラム名がテンプレートのフィールドキーまたはラベルに一致すると自動的にマッピングされます。</span><span class="en">CSV, TSV, Excel (.xlsx / .xls), and JSON are supported. Column names are auto-mapped when they match template field keys or labels.</span></div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q"><span class="ja">自分のPDFテンプレートを使えますか？</span><span class="en">Can I use my own PDF templates?</span></div>
+      <div class="faq-a"><span class="ja">現在は4種類の内蔵テンプレートを提供しています。カスタムPDFアップロード機能は今後のアップデートで追加予定です。</span><span class="en">Currently we offer 4 built-in templates. Custom PDF upload is planned for a future update.</span></div>
+    </div>
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q"><span class="ja">解約はいつでもできますか？</span><span class="en">Can I cancel anytime?</span></div>
+      <div class="faq-a"><span class="ja">はい。いつでもキャンセル可能で、現在の請求期間の終了までサービスをご利用いただけます。長期契約の縛りはありません。</span><span class="en">Yes. Cancel anytime. Your plan remains active until the end of the current billing period. No long-term commitments.</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+<div class="container">
+  <div class="cta-box">
+    <h2 class="ja">まずは無料で試してみてください</h2>
+    <h2 class="en">Try It Free Today</h2>
+    <p class="ja">登録不要。ブラウザを開くだけですぐに使えます。</p>
+    <p class="en">No sign-up required. Just open your browser and start generating.</p>
+    <a href="/pdfflow/app/" class="btn btn-white ja">無料で始める →</a>
+    <a href="/pdfflow/app/" class="btn btn-white en">Get Started Free →</a>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="container">
+  <p>PDF FLOW — <a href="https://mamonis.studio">mamonis.studio</a></p>
+</div>
+</footer>
+
+<script>
+function setLang(l){
+  document.body.setAttribute('data-lang',l);
+  document.getElementById('btn-ja').className=l==='ja'?'active':'';
+  document.getElementById('btn-en').className=l==='en'?'active':'';
+  document.querySelectorAll('.price-card .badge').forEach(b=>{
+    b.style.display=b.classList.contains(l)?'':'none';
+  });
+}
+if(navigator.language&&!navigator.language.startsWith('ja'))setLang('en');
+</script>
+</body>
+</html>
